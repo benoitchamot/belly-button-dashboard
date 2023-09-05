@@ -96,30 +96,37 @@ function getSampleById(samples, id) {
 
 // TODO: get sort and slice functions working
 function displayHBar(samples) {
+    console.log("Bar chart")
     console.log(samples)
+
+    // Combine the array in a single object
+    samples_list = [];
+    for (let i=0; i<samples.otu_ids.length;i++) {
+        samples_list.push({
+            otu_ids: samples.otu_ids[i],
+            sample_values: samples.sample_values[i]
+        });
+    }
+
     // Sort the data by Greek search results descending
-    // let samplesSorted = samples.sort((a, b) => b.sample_values - a.sample_values);
+    let samplesSorted = samples_list.sort((a, b) => b.sample_values - a.sample_values);
 
     // // Slice the first 10 objects for plotting
-    // let samplesSortedTop10 = samplesSorted.slice(0,10);
+    let samplesSortedTop10 = samplesSorted.slice(0,10);
 
     // // Reverse the array to accommodate Plotly's defaults
-    // samplesSortedTop10.reverse()
+    samplesSortedTop10.reverse()
 
+    console.log(samplesSortedTop10)
+
+    
     // Trace for the Greek Data
-    // trace = {
-    //     x: samples.map(index => index.sample_values),
-    //     y: samples.map(index => index.otu_ids),
-    //     type: "bar",
-    //     orientation: 'h'
-    // }
-
     trace = {
-        x: samples.sample_values,
-        y: samples.otu_ids,
+        x: samplesSortedTop10.map(index => index.sample_values),
+        y: samplesSortedTop10.map(index => `OTU ${index.otu_ids}`),
         type: "bar",
         orientation: 'h'
-    }
+    };
 
     // Data array
     data = [trace]
