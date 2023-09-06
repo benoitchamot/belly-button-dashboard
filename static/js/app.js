@@ -43,7 +43,7 @@ function displayDemoInfo(metadata) {
 }
 
 function optionChanged(value) {
-// Update all viz when the dropdown menu is used
+// Event listener. Update the dashboard when the dropdown menu is used
     let info = getMetadataById(metadata, value);
     displayDemoInfo(info);
 
@@ -56,11 +56,6 @@ function optionChanged(value) {
     displayBubbleChart(sample);
 }
 
-// function selectId(object, id){
-//     return object.id == id;
-// }
-
-// TODO: use .filter function instead!
 function getMetadataById(metadata, id) {
 // Retrieve all the metadata for a given id
     // Loop through the metadata
@@ -81,7 +76,6 @@ function getMetadataById(metadata, id) {
 
 }
 
-// TODO: use .filter function instead!
 function getSampleById(samples, id) {
 // Retrieve all the samples for a given id
     // Loop through the samples
@@ -165,6 +159,7 @@ function displayBubbleChart(samples) {
 }
 
 function displayGauge(value) {
+// Display gauge
 
     let data = [
         {
@@ -197,5 +192,6 @@ function displayGauge(value) {
         }
     ];
     
+    // Render the gauge to the div tag with id "gauge"
     Plotly.newPlot('gauge', data);
 }
