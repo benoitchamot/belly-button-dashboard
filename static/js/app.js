@@ -8,7 +8,6 @@ d3.json(url).then(function(data){
 
     // Add the ids to the dropdown menu
     listOptions(data.samples);
-    console.log(data.metadata)
 
     // Update global variables
     metadata = data.metadata;
@@ -48,21 +47,25 @@ function optionChanged(value) {
     let info = getMetadataById(metadata, value);
     displayDemoInfo(info);
 
-    // Update the bar chart
+    // Update the gauge
+    displayGauge(info.wfreq)
+
+    // Update the charts
     let sample = getSampleById(samples, value);
     displayHBar(sample);
     displayBubbleChart(sample);
 }
 
-function selectId(object, id){
-    return object.id == id;
-}
+// function selectId(object, id){
+//     return object.id == id;
+// }
 
 // TODO: use .filter function instead!
 function getMetadataById(metadata, id) {
 // Retrieve all the metadata for a given id
     // Loop through the metadata
     for (let i = 0; i<metadata.length; i++){
+        // Add data from the specified id
         if (metadata[i].id == id) {
             return {
                 id: metadata[i].id,
@@ -94,13 +97,12 @@ function getSampleById(samples, id) {
     }    
 }
 
-// TODO: get sort and slice functions working
 function displayHBar(samples) {
-    console.log("Bar chart")
-    console.log(samples)
+// Display horizontal bar chart for top 10 otu ids
 
-    // Combine the array in a single object
-    samples_list = [];
+    // Combine the arrays into a single object
+    // Prototype: [{otu_ids: ..., sample_values: ...}, {...}, {...}]
+    let samples_list = [];
     for (let i=0; i<samples.otu_ids.length;i++) {
         samples_list.push({
             otu_ids: samples.otu_ids[i],
@@ -108,20 +110,17 @@ function displayHBar(samples) {
         });
     }
 
-    // Sort the data by Greek search results descending
+    // Sort the data by sample values in descending order
     let samplesSorted = samples_list.sort((a, b) => b.sample_values - a.sample_values);
 
-    // // Slice the first 10 objects for plotting
+    // // Slice the first 10 objects
     let samplesSortedTop10 = samplesSorted.slice(0,10);
 
     // // Reverse the array to accommodate Plotly's defaults
     samplesSortedTop10.reverse()
-
-    console.log(samplesSortedTop10)
-
     
-    // Trace for the Greek Data
-    trace = {
+    // Trace for the OTU data
+    let trace = {
         x: samplesSortedTop10.map(index => index.sample_values),
         y: samplesSortedTop10.map(index => `OTU ${index.otu_ids}`),
         type: "bar",
@@ -129,36 +128,74 @@ function displayHBar(samples) {
     };
 
     // Data array
-    data = [trace]
-
-    // Apply a title to the layout
-    layout = {
-        title: "Top 10 OTU"
-    }
+    let data = [trace]
 
     // Render the plot to the div tag with id "plot"
-    Plotly.newPlot("bar", data, layout)
+    Plotly.newPlot("bar", data)
 }
 
 function displayBubbleChart(samples) {
-    console.log("Display bubble chart...")
+// Display bubble chart
 
+    function scaleSize(value) {
+        return Math.sqrt(value)*8;
+    }
+
+    // Trace for the OTU data
     let trace = {
         x: samples.otu_ids,
         y: samples.sample_values,
         mode: 'markers',
         marker: {
-          size: samples.sample_values,
+          size: samples.sample_values.map(index => scaleSize(index)),
           color: samples.otu_ids
-        }
+        },
+        text: samples.otu_labels
       };
 
+    let layout = {
+        xaxis: {title: {text: 'OTU ID'}}
+    }
+
     // Data array
-    data = [trace]
+    let data = [trace]
 
-    // Render the plot to the div tag with id "plot"
-    Plotly.newPlot("bubble", data)
+    // Render the plot to the div tag with id "bubble"
+    Plotly.newPlot("bubble", data, layout)
+}
 
+function displayGauge(value) {
+
+    let data = [
+        {
+            domain: { x: [0, 1], y: [0, 1] },
+            value: value,
+            title: { text: "Scrubs per week" },
+            type: "indicator",
+            mode: "gauge+number",
+            gauge: {
+                bar: {
+                    color: "black"
+                },
+                axis:{range: [0, 9]},
+                steps: [
+                { range: [0, 1], color: "#ED7D31" },
+                { range: [1, 2], color: "#F4B183" },
+                { range: [2, 3], color: "FFD966" },
+                { range: [3, 4], color: "#FFE699" },
+                { range: [4, 5], color: "#FFF2CC" },
+                { range: [5, 6], color: "#E2F0D9" },
+                { range: [6, 7], color: "#C5E0B4" },
+                { range: [7, 8], color: "#A9D18E" },
+                { range: [8, 9], color: "#548235" }
+              ],
+              threshold: {
+                line: {'color': "black", 'width': 4},
+                thickness: 0.75,
+                value: value}
+            }
+        }
+    ];
     
-    console.log("OK")
+    Plotly.newPlot('gauge', data);
 }
