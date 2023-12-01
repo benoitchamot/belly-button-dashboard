@@ -2,7 +2,7 @@
 Repository for Monash University Bootcamp Module 14
 
 ## GitHub Pages
-Link to the dasboard: https://benoitchamot.github.io/belly-button-challenge/
+Link to the dasboard: https://benoitchamot.github.io/belly-button-dashboard/
 
 ## File structure
 - the `static/js` directory contains `app.js`, a Javascript file used to handle and display the data
