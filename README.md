@@ -1,5 +1,4 @@
-# belly-button-challenge
-Repository for Monash University Bootcamp Module 14
+# Belly Button Dashboard
 
 ## GitHub Pages
 Link to the dasboard: https://benoitchamot.github.io/belly-button-dashboard/
